@@ -29,7 +29,7 @@ end
 
 function NWVars.WriteTableUpdate(bWholeTable) // decide where it goes after function call.
     if(bWholeTable)then
-        net.Start("NetVar Table Update", true)
+        net.Start("NetVar Table Update", false)
         net.WriteUInt(#NWVars.NWStrings, NETWORKID_BITS);
         for k, v in ipairs(NWVars.NWStrings) do
             net.WriteUInt(v.index, NETWORKID_BITS);
@@ -142,6 +142,14 @@ hook.Add("Tick", "good enough", function() // whatever the latest hook is before
         NWVars.SendNumEnts = 0;
     end
 end);
+
+hook.Add("PlayerInitialSpawn","send and update vars", function(pPlayer)
+    NWvars.WriteTableUpdate(true);
+    net.Send(pPlayer);
+    NWvars.WriteDataUpdate(true,false);
+    net.Send(pPlayer);
+end)
+
 
 local EntityMetaTbl = FindMetaTable("Entity");
 
