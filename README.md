@@ -1,2 +1,1 @@
-# Lua-networkvars
-network vars using garrysmod lua 
+I'm not touching this anymore, if you find issues just fix em yourself.
