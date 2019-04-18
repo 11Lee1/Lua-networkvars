@@ -7,6 +7,7 @@ local NWVars = {
     NWLogVarEnts = { },     // for players who just connected.
     SendVars = false,
     SendNumEnts = 0;
+    NWStringsNumEnts = 0;
 }
 
 local ENTITY_BITS = 13; // MAX_EDICT_BITS
@@ -76,7 +77,7 @@ function NWVars.WriteDataUpdate(bWholeTable,unreliable)
         net.Start("NetVars", unreliable);
         net.WriteUInt(0, 1);                                    // bUninterpolated
         net.WriteUInt(engine.TickCount(),32)                    // Tickcount, only send if bUninterpolated == false
-        net.WriteUInt(#NWVars.NWLogVarEnts, ENTITY_BITS);       // num entities
+        net.WriteUInt(NWVars.NWStringsNumEnts, ENTITY_BITS);       // num entities
         for k, v in ipairs(#NWVars.NWLogVarEnts) do
             net.WriteUInt(v.ent:EntIndex(), ENTITY_BITS);       // ent index
             net.WriteUInt(#v, VARAMT_BITS);                     // num vars for this ent
@@ -111,6 +112,7 @@ function NWVars.CleanLogTable()
     for k, v in pairs(NWVars.NWLogVarEnts) do
         if(!k:IsValid())then
             NWVars.NWLogVarEnts[k] = nil;
+            NWVars.NWStringsNumEnts = NWVars.NWStringsNumEnts - 1;
         end
     end
 end
@@ -162,6 +164,7 @@ function EntityMetaTbl:SetLNWVar(str,val)
     end
     if(NWVars.NWLogVarEnts[self] == nil) then
         NWVars.NWLogVarEnts[self] = { };
+        NWVars.NWStringsNumEnts = NWVars.NWStringsNumEnts + 1;
     end
     if(NWVars.NWSendNWVars[self] == nil) then
         NWVars.NWSendNWVars[self] = { };
